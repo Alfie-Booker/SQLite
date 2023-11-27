@@ -20,8 +20,8 @@ def string_input(question):
           
           
           
-def unique(cursor, creatorid):
-    cursor.execute("SELECT * FROM creator WHERE creatorid = ?",(creatorid,))
+def unique(cursor, userid):
+    cursor.execute("SELECT * FROM users WHERE userid = ?",(userid,))
     is_unique = cursor.fetchone()
     return is_unique is None
     
@@ -29,23 +29,23 @@ def unique(cursor, creatorid):
     
 def add(cursor,conn):
     while True:
-        creatorid = int_input("What is creatorid?")
-        if unique(cursor, creatorid):
-            creator_name = input("what is the creator name")
+        userid = int_input("What is userid?")
+        if unique(cursor, userid):
+            user_name = input("what is the user name")
             forename = input("what is the forename")
             surname = input("what is the surname")
             email = input("what is the email")
             signup_date = input("what is sign up date")
-            cursor.execute("INSERT INTO creator (creatorid,creator_name,forename,surname,email,signup_date) VALUES (?,?,?,?,?,?)", (creatorid,creator_name,forename,surname,email,signup_date))
+            cursor.execute("INSERT INTO users (userid,user_name,forename,surname,email,signup_date) VALUES (?,?,?,?,?,?)", (userid,user_name,forename,surname,email,signup_date))
             conn.commit()
             break
         else:
-            print("creatorid not unique")
+            print("userid not unique")
 
 
 
 def view(cursor,conn):
-    cursor.execute("SELECT * FROM creator")
+    cursor.execute("SELECT * FROM users")
     rows = cursor.fetchall()
     for row in rows:
         print(row)
@@ -53,32 +53,32 @@ def view(cursor,conn):
 
 def edit(cursor,conn):
     view(cursor,conn)
-    creatorid = int_input("Enter the record number you want to edit")
+    userid = int_input("Enter the record number you want to edit")
     while True:
-        if unique(cursor,creatorid) == False:
+        if unique(cursor,userid) == False:
             break
         else:
             print("Enter a valid id")
-    creator_name = input("what is the creator name")
+    user_name = input("what is the user name")
     forename = input("what is the forename")
     surname = input("what is the surname")
     email = input("what is the email")
     signup_date = input("what is sign up date")
-    cursor.execute("UPDATE creator SET creator_name = ?, forename = ?, surname = ?, email = ?, signup_date = ? WHERE creatorid = ?",(creator_name, forename, surname, email, signup_date,creatorid))
+    cursor.execute("UPDATE users SET user_name = ?, forename = ?, surname = ?, email = ?, signup_date = ? WHERE userid = ?",(user_name, forename, surname, email, signup_date,userid))
     conn.commit()
     
     
     
 def remove(cursor,conn):
     view(cursor,conn)
-    creatorid = int_input("Enter the record number you want to remove")
+    userid = int_input("Enter the record number you want to remove")
     while True:
-        if unique(cursor,creatorid) == False:
+        if unique(cursor,userid) == False:
             break
         else:
             print("Enter a valid id")
             
-    cursor.execute("DELETE FROM creator WHERE creatorid = ?",(creatorid,))
+    cursor.execute("DELETE FROM users WHERE userid = ?",(userid,))
     conn.commit()
     
     
@@ -130,3 +130,4 @@ def main():
     
 if __name__ == "__main__":
     main()
+
