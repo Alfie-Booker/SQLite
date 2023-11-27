@@ -1,0 +1,132 @@
+import sqlite3
+
+def int_input(question):
+  while True:
+    try:
+        user_input = int(input(question))
+        return user_input  
+    except ValueError:
+        print("Please enter a valid integer.")
+
+
+
+def string_input(question):
+    while True:
+        user_input = input(question)
+        if user_input != "":
+            return user_input
+        else:
+            print("Need an input")
+          
+          
+          
+def unique(cursor, creatorid):
+    cursor.execute("SELECT * FROM creator WHERE creatorid = ?",(creatorid,))
+    is_unique = cursor.fetchone()
+    return is_unique is None
+    
+    
+    
+def add(cursor,conn):
+    while True:
+        creatorid = int_input("What is creatorid?")
+        if unique(cursor, creatorid):
+            creator_name = input("what is the creator name")
+            forename = input("what is the forename")
+            surname = input("what is the surname")
+            email = input("what is the email")
+            signup_date = input("what is sign up date")
+            cursor.execute("INSERT INTO creator (creatorid,creator_name,forename,surname,email,signup_date) VALUES (?,?,?,?,?,?)", (creatorid,creator_name,forename,surname,email,signup_date))
+            conn.commit()
+            break
+        else:
+            print("creatorid not unique")
+
+
+
+def view(cursor,conn):
+    cursor.execute("SELECT * FROM creator")
+    rows = cursor.fetchall()
+    for row in rows:
+        print(row)
+
+
+def edit(cursor,conn):
+    view(cursor,conn)
+    creatorid = int_input("Enter the record number you want to edit")
+    while True:
+        if unique(cursor,creatorid) == False:
+            break
+        else:
+            print("Enter a valid id")
+    creator_name = input("what is the creator name")
+    forename = input("what is the forename")
+    surname = input("what is the surname")
+    email = input("what is the email")
+    signup_date = input("what is sign up date")
+    cursor.execute("UPDATE creator SET creator_name = ?, forename = ?, surname = ?, email = ?, signup_date = ? WHERE creatorid = ?",(creator_name, forename, surname, email, signup_date,creatorid))
+    conn.commit()
+    
+    
+    
+def remove(cursor,conn):
+    view(cursor,conn)
+    creatorid = int_input("Enter the record number you want to remove")
+    while True:
+        if unique(cursor,creatorid) == False:
+            break
+        else:
+            print("Enter a valid id")
+            
+    cursor.execute("DELETE FROM creator WHERE creatorid = ?",(creatorid,))
+    conn.commit()
+    
+    
+    
+def main():
+    
+    conn = sqlite3.connect("SQL_Database.db")
+    cursor = conn.cursor()
+    
+    print("What do you want to do?")
+    print("")
+    print("1 - ADD")
+    print("")
+    print("2 - VIEW")
+    print("")
+    print("3 - EDIT")
+    print("")
+    print("4 - REMOVE")
+    print("")
+    print("5 - QUIT")
+    while True:
+        choice = int_input("What is your choice?")
+        if 0<choice<6:
+            break
+        else:
+            print("not in range")
+    match choice:
+        case 1:
+            add(cursor,conn)
+            
+        case 2:
+            view(cursor,conn)
+        
+        case 3:
+            edit(cursor,conn)
+            
+        case 4:
+            remove(cursor,conn)
+        
+        case 5:
+            quit()
+        
+    
+
+
+    conn.close()
+    
+    
+    
+if __name__ == "__main__":
+    main()
